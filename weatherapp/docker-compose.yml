@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+
+  redis-master:
+    image: redis
+    container_name: redis-master
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./docker/redis-master.conf:/redis.conf
+    command: redis-server /redis.conf
+
+  redis-replica:
+    image: redis
+    container_name: redis-replica
+    ports:
+      - "6380:6380"
+    volumes:
+      - ./docker/redis-replica.conf:/redis.conf
+    command: redis-server /redis.conf
+    depends_on:
+      - redis-master
+
+  redis-sentinel:
+    image: redis
+    container_name: redis-sentinel
+    ports:
+      - "26379:26379"
+    volumes:
+      - ./docker/sentinel.conf:/sentinel.conf
+    command: redis-sentinel /sentinel.conf
+    depends_on:
+      - redis-master
